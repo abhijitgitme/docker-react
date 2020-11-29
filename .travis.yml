@@ -1,0 +1,23 @@
+language: generic
+sudo: required
+services:
+  - docker #docker should be ready
+
+before_install: #before installation or before test run 
+  - docker build -t abhijitgitme/docker-react -f Dockerfile.dev . #we are running the dev docker file and also tagging the image whcih will be created
+
+script: # this will tell travis how to run the test suite
+  - docker run -e CI=true abhijitgitme/docker-react npm run test
+
+deploy:
+  provider: elasticbeanstalk #telling travis to deploy on the AWS BS
+  region: "eu-west-1"
+  app: "docker-react"
+  #environment: "DockerReact-env"
+  bucket_name: "elasticbeanstalk-eu-west-1-624505126416"
+  bucket_path: "docker-react" #this is not created first. After first deployment this gets created
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY #this is important
+  edge: true #abhijit is feature is updated again
